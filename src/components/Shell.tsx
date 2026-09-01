@@ -10,6 +10,7 @@ function navFor(session: SessionUser): { href: string; label: string }[] {
       return [
         { href: "/admin", label: "Control global" },
         { href: "/admin/usuarios", label: "Usuarios" },
+        { href: "/admin/credenciales", label: "Credenciales" },
         { href: "/admin/edificios", label: "Edificios" },
         { href: "/admin/categorias", label: "Categorías y SLA" },
         { href: "/admin/calendario-sla", label: "Calendario SLA" },
