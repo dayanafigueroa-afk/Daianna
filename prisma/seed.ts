@@ -19,7 +19,7 @@ import "dotenv/config";
 import fs from "node:fs";
 import path from "node:path";
 import bcrypt from "bcryptjs";
-import { PrismaClient } from "../src/generated/prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { parseMasterWorkbook } from "../src/lib/import/parse-master";
 import { applyMasterData } from "../src/lib/import/upsert-master";
 

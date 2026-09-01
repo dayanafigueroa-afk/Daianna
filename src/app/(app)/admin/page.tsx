@@ -4,7 +4,7 @@ import { annotateSla, summarizeIndicators } from "@/lib/ticket-list";
 import { IndicatorCards } from "@/components/tickets/IndicatorCards";
 import { TicketTable } from "@/components/tickets/TicketTable";
 import { STATUS_LABEL } from "@/lib/labels";
-import type { TicketStatus, Role } from "@/generated/prisma/enums";
+import type { TicketStatus, Role } from "@prisma/client";
 
 export default async function AdminDashboardPage({
   searchParams,

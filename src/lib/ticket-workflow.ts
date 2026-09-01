@@ -1,4 +1,4 @@
-import type { TicketStatus } from "@/generated/prisma/enums";
+import type { TicketStatus } from "@prisma/client";
 
 /**
  * Transiciones manuales permitidas por el "responsable" (JEM/JOP asignado o

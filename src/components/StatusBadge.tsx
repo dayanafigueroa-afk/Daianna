@@ -1,4 +1,4 @@
-import type { TicketStatus } from "@/generated/prisma/enums";
+import type { TicketStatus } from "@prisma/client";
 import { STATUS_LABEL, STATUS_TONE } from "@/lib/labels";
 import { Badge } from "@/components/Badge";
 

@@ -1,4 +1,4 @@
-import type { Prisma, PrismaClient } from "@/generated/prisma/client";
+import type { Prisma, PrismaClient } from "@prisma/client";
 import { sendCorporateEmail } from "@/lib/notifications/email-channel";
 
 type Tx = PrismaClient | Prisma.TransactionClient;

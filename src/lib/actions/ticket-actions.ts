@@ -19,7 +19,7 @@ import {
   RESOLVABLE_FROM,
 } from "@/lib/ticket-workflow";
 import { STATUS_LABEL } from "@/lib/labels";
-import type { TicketStatus } from "@/generated/prisma/client";
+import type { TicketStatus } from "@prisma/client";
 
 async function getTicketOrThrow(ticketId: string) {
   const ticket = await prisma.ticket.findUnique({ where: { id: ticketId } });

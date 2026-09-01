@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { STATUS_LABEL } from "@/lib/labels";
-import type { TicketStatus } from "@/generated/prisma/enums";
+import type { TicketStatus } from "@prisma/client";
 
 const STATUSES = Object.keys(STATUS_LABEL) as TicketStatus[];
 

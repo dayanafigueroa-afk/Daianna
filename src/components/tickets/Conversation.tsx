@@ -1,4 +1,4 @@
-import type { MessageKind } from "@/generated/prisma/enums";
+import type { MessageKind } from "@prisma/client";
 import { formatDateTime, MESSAGE_KIND_LABEL } from "@/lib/labels";
 import { Badge } from "@/components/Badge";
 

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { TicketStatus } from "@/generated/prisma/enums";
+import type { TicketStatus } from "@prisma/client";
 import type { SlaStatus } from "@/lib/sla";
 import { StatusBadge } from "@/components/StatusBadge";
 import { SlaBadge } from "@/components/SlaBadge";
