@@ -1,0 +1,367 @@
+// JOP 360 — Centro de Gestión Operacional Multifamily
+// Prisma schema. El Excel "Archivo Madre" se importa una sola vez a estas
+// tablas (ver prisma/seed.ts); desde ahí la base de datos es la única
+// fuente transaccional (sección 26 del brief).
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Identidad y acceso
+// ---------------------------------------------------------------------------
+
+enum Role {
+  ADMIN
+  JOP
+  JEM
+  SOLICITANTE
+}
+
+model User {
+  id                 String   @id @default(cuid())
+  name               String
+  email              String   @unique
+  passwordHash       String
+  role               Role
+  active             Boolean  @default(true)
+  mustChangePassword Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  buildingsAsJem Building[] @relation("BuildingJem")
+  buildingsAsJop Building[] @relation("BuildingJop")
+
+  ticketsCreated      Ticket[] @relation("TicketRequester")
+  ticketsAssignedJem  Ticket[] @relation("TicketAssignedJem")
+  ticketsAssignedJop  Ticket[] @relation("TicketAssignedJop")
+
+  messages      TicketMessage[]
+  historyEvents TicketHistoryEvent[]
+  notifications Notification[]
+  auditLogs     AuditLog[]
+  attachments   Attachment[]
+  resetTokens   PasswordResetToken[]
+  importBatches ImportBatch[]
+
+  @@index([role])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+}
+
+// ---------------------------------------------------------------------------
+// Edificios (Maestro de Edificios)
+// ---------------------------------------------------------------------------
+
+model Building {
+  id                    String   @id @default(cuid())
+  name                  String   @unique
+  tipo                  String
+  modeloAtencional      String?
+  comuna                String
+  cantidadDepartamentos Int
+  propietario           String?
+  active                Boolean  @default(true)
+
+  // Confirmado por el cliente: el correo del Excel es el login personal del
+  // JEM (con el nombre del edificio para que sea amigable con residentes).
+  // jemId queda null solo en los 2 edificios que no tienen bandeja propia de
+  // JEM (hallazgo G-02) — en ese caso el JOP asume la responsabilidad.
+  jemId String?
+  jem   User?   @relation("BuildingJem", fields: [jemId], references: [id])
+
+  jopId String
+  jop   User   @relation("BuildingJop", fields: [jopId], references: [id])
+
+  tickets Ticket[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([jopId])
+  @@index([jemId])
+}
+
+// ---------------------------------------------------------------------------
+// Categorías / SLA (hoja "3. CATEGORIAS" del Archivo Madre)
+// ---------------------------------------------------------------------------
+
+model Category {
+  id             String   @id // ej. "JOP-001", "JEM-007" — mismo ID del Excel
+  name           String
+  responsibleRole Role    // JOP o JEM
+  slaDays        Float
+  slaHours       Float    // normalizado a número (el Excel traía texto para JEM-*)
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  subcategories Subcategory[]
+  tickets       Ticket[]
+}
+
+// No existen en el Archivo Madre (hallazgo G-03). Catálogo administrable,
+// vacío al importar; el formulario lo usa solo si hay subcategorías activas
+// para la categoría elegida.
+model Subcategory {
+  id         String   @id @default(cuid())
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+  name       String
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+
+  tickets Ticket[]
+
+  @@unique([categoryId, name])
+}
+
+// No existen en el Archivo Madre (hallazgo G-04). Catálogo administrable,
+// vacío al importar; el ticket puede crearse sin prioridad hasta que se
+// cargue este catálogo.
+model Priority {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  level     Int      // menor = más urgente, para ordenar
+  color     String   // token semántico para la UI (ej. "crit", "warn", "good")
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  tickets Ticket[]
+}
+
+// ---------------------------------------------------------------------------
+// Calendario operacional para el cálculo de SLA (sección 11 del brief).
+// Confirmado por el cliente: el conteo es en días hábiles. El horario y los
+// feriados no vinieron definidos — quedan como configuración administrable
+// con un valor por defecto, nunca escritos fijos en el código.
+// ---------------------------------------------------------------------------
+
+model SlaCalendarConfig {
+  id        Int      @id @default(1)
+  worksMon  Boolean  @default(true)
+  worksTue  Boolean  @default(true)
+  worksWed  Boolean  @default(true)
+  worksThu  Boolean  @default(true)
+  worksFri  Boolean  @default(true)
+  worksSat  Boolean  @default(false)
+  worksSun  Boolean  @default(false)
+  startTime String   @default("09:00")
+  endTime   String   @default("18:00")
+  timezone  String   @default("America/Santiago")
+  updatedAt DateTime @updatedAt
+}
+
+model Holiday {
+  id     String   @id @default(cuid())
+  date   DateTime @db.Date
+  name   String
+  active Boolean  @default(true)
+
+  @@unique([date])
+}
+
+// ---------------------------------------------------------------------------
+// Tickets
+// ---------------------------------------------------------------------------
+
+enum TicketTarget {
+  JOP
+  JEM
+}
+
+enum TicketStatus {
+  NUEVO
+  ASIGNADO
+  EN_GESTION
+  PENDIENTE_INFO
+  ESCALADO
+  RESUELTO
+  CERRADO
+  REABIERTO
+}
+
+enum MessageKind {
+  PUBLIC
+  INTERNAL
+}
+
+model TicketSequence {
+  year       Int @id
+  lastNumber Int @default(0)
+}
+
+model Ticket {
+  id   String @id @default(cuid())
+  code String @unique // TICKET-2026-000001
+
+  target TicketTarget
+
+  requesterId     String
+  requester       User   @relation("TicketRequester", fields: [requesterId], references: [id])
+  areaSolicitante String // no existe catálogo de áreas en el Excel (hallazgo G-06) — texto libre por ahora
+
+  buildingId String?
+  building   Building? @relation(fields: [buildingId], references: [id])
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  subcategoryId String?
+  subcategory   Subcategory? @relation(fields: [subcategoryId], references: [id])
+
+  priorityId String?
+  priority   Priority? @relation(fields: [priorityId], references: [id])
+
+  subject     String
+  description String
+
+  assignedJemId String?
+  assignedJem   User?   @relation("TicketAssignedJem", fields: [assignedJemId], references: [id])
+  // Nullable: una solicitud "al JOP" sin edificio asociado no tiene forma de
+  // resolver un JOP específico desde el Archivo Madre (solo relaciona JOP
+  // con edificio, no con área/categoría). Queda en cola de asignación manual
+  // para Administrador en vez de adivinar un responsable (ver hallazgo G-06
+  // del diagnóstico de Etapa 1).
+  assignedJopId String?
+  assignedJop   User?   @relation("TicketAssignedJop", fields: [assignedJopId], references: [id])
+
+  status TicketStatus @default(NUEVO)
+
+  requestedDate DateTime? // "fecha requerida" opcional
+  slaDueAt      DateTime
+  resolvedAt    DateTime?
+  closedAt      DateTime?
+  reopenedCount Int       @default(0)
+
+  escalationReason String?
+  escalatedAt      DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  messages      TicketMessage[]
+  history       TicketHistoryEvent[]
+  attachments   Attachment[]
+  notifications Notification[]
+
+  @@index([status])
+  @@index([assignedJemId])
+  @@index([assignedJopId])
+  @@index([buildingId])
+  @@index([requesterId])
+}
+
+model TicketMessage {
+  id       String      @id @default(cuid())
+  ticketId String
+  ticket   Ticket      @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  authorId String
+  author   User        @relation(fields: [authorId], references: [id])
+  kind     MessageKind
+  body     String
+  createdAt DateTime   @default(now())
+
+  attachments Attachment[]
+
+  @@index([ticketId])
+}
+
+model Attachment {
+  id           String   @id @default(cuid())
+  filename     String
+  mimeType     String
+  size         Int
+  storedPath   String // ruta relativa dentro del storage configurado (S3-compatible en producción)
+  uploadedById String
+  uploadedBy   User     @relation(fields: [uploadedById], references: [id])
+  ticketId     String?
+  ticket       Ticket?  @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  messageId    String?
+  message      TicketMessage? @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+}
+
+// El historial nunca se borra (sección 18): no hay operación de delete
+// expuesta para este modelo en la capa de servicios.
+model TicketHistoryEvent {
+  id        String   @id @default(cuid())
+  ticketId  String
+  ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  action    String
+  fieldName String?
+  oldValue  String?
+  newValue  String?
+  createdAt DateTime @default(now())
+
+  @@index([ticketId])
+}
+
+// ---------------------------------------------------------------------------
+// Notificaciones (sección 21)
+// ---------------------------------------------------------------------------
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ticketId  String?
+  ticket    Ticket?  @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  type      String
+  title     String
+  body      String
+  read      Boolean  @default(false)
+  emailSent Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId, read])
+}
+
+// ---------------------------------------------------------------------------
+// Auditoría (sección 28) — tampoco se borra.
+// ---------------------------------------------------------------------------
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id])
+  action     String
+  module     String
+  recordType String
+  recordId   String
+  oldValue   String?
+  newValue   String?
+  createdAt  DateTime @default(now())
+
+  @@index([module])
+  @@index([recordType, recordId])
+}
+
+// ---------------------------------------------------------------------------
+// Importación desde Excel (sección 25) — deja rastro de cada corrida.
+// ---------------------------------------------------------------------------
+
+model ImportBatch {
+  id           String   @id @default(cuid())
+  fileName     String
+  importedById String
+  importedBy   User     @relation(fields: [importedById], references: [id])
+  summary      String // JSON serializado: nuevos/actualizados/sinCambios/duplicados/errores
+  createdAt    DateTime @default(now())
+}
