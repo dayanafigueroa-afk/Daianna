@@ -3,9 +3,13 @@
 // tablas (ver prisma/seed.ts); desde ahí la base de datos es la única
 // fuente transaccional (sección 26 del brief).
 
+// Generador clásico (no el nuevo "prisma-client" ESM): Next.js tiene manejo
+// especial incorporado para empaquetar el motor de Prisma en funciones
+// serverless con este generador. El nuevo generador ESM resuelve el binario
+// del motor de forma relativa a __dirname, y el bundling de Vercel puede
+// romper esa ruta — eso causaba el error 500 en producción.
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {

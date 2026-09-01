@@ -4,7 +4,7 @@ import { useTransition } from "react";
 import { toggleCategoryActiveAction } from "@/lib/actions/admin-catalog-actions";
 import { Badge } from "@/components/Badge";
 import { formatSlaDays } from "@/lib/labels";
-import type { Role } from "@/generated/prisma/enums";
+import type { Role } from "@prisma/client";
 
 type Category = {
   id: string;

@@ -4,7 +4,7 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import type { Role } from "@/generated/prisma/enums";
+import type { Role } from "@prisma/client";
 
 const COOKIE_NAME = "jop360_session";
 const SESSION_TTL_SECONDS = 60 * 60 * 12; // 12h

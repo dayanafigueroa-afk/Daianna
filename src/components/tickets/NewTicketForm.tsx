@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useMemo, useState } from "react";
-import type { Category, Subcategory, Priority } from "@/generated/prisma/client";
+import type { Category, Subcategory, Priority } from "@prisma/client";
 import { createTicketAction, type CreateTicketState } from "@/lib/actions/ticket-actions";
 
 type Building = { id: string; name: string };

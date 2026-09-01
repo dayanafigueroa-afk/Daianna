@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
-import type { Notification } from "@/generated/prisma/client";
+import type { Notification } from "@prisma/client";
 import {
   markAllNotificationsReadAction,
   markNotificationReadAction,

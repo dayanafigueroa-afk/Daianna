@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import type { TicketStatus } from "@/generated/prisma/enums";
+import type { TicketStatus } from "@prisma/client";
 import {
   changeTicketStatusAction,
   closeTicketAction,

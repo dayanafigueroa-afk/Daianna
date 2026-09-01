@@ -5,7 +5,7 @@ import { annotateSla, summarizeIndicators } from "@/lib/ticket-list";
 import { IndicatorCards } from "@/components/tickets/IndicatorCards";
 import { TicketTable } from "@/components/tickets/TicketTable";
 import { StatusFilterBar } from "@/components/tickets/StatusFilterBar";
-import type { TicketStatus } from "@/generated/prisma/enums";
+import type { TicketStatus } from "@prisma/client";
 
 export default async function MisTicketsPage({
   searchParams,

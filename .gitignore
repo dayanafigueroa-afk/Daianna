@@ -41,8 +41,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-/src/generated/prisma
-
 # archivos adjuntos subidos por usuarios (almacenamiento local de desarrollo)
 /storage/uploads
 /storage/imports

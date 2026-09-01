@@ -1,4 +1,4 @@
-import type { Role, TicketStatus, MessageKind, TicketTarget } from "@/generated/prisma/enums";
+import type { Role, TicketStatus, MessageKind, TicketTarget } from "@prisma/client";
 
 export const ROLE_LABEL: Record<Role, string> = {
   ADMIN: "Administrador",
