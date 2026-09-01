@@ -29,7 +29,26 @@ aparte; este README cubre solo cómo correr el código.
 - Node.js 20+
 - PostgreSQL 14+ corriendo localmente (o accesible por `DATABASE_URL`)
 
-## Puesta en marcha
+## Desplegar en Vercel (para tener un link real)
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fdayanafigueroa-afk%2FDaianna%2Ftree%2Fclaude%2Fjop-360-ticketera-v4nlhf&env=DATABASE_URL,AUTH_SECRET&envDescription=DATABASE_URL%3A%20cadena%20de%20conexi%C3%B3n%20Postgres.%20AUTH_SECRET%3A%20cualquier%20texto%20largo%20y%20aleatorio.&project-name=jop360&repository-name=jop360)
+
+1. **Clic en el botón** — te pedirá iniciar sesión en Vercel (o crear una cuenta) y conectar tu GitHub.
+2. **Base de datos**: necesitas un Postgres accesible desde internet. La forma más rápida:
+   - En el propio asistente de Vercel, pestaña **Storage → Create Database → Postgres** (usa Neon por debajo, tiene plan gratis), o
+   - Crear una gratis en [neon.tech](https://neon.tech) o [supabase.com](https://supabase.com) y copiar la "connection string".
+   - Pega esa URL en el campo `DATABASE_URL` que te pide el formulario de deploy.
+3. **AUTH_SECRET**: cualquier texto largo y aleatorio (ej. generado con `openssl rand -base64 48`).
+4. **Deploy**. Vercel instala dependencias, aplica las migraciones automáticamente (`prisma migrate deploy` corre como parte del build) y publica la app.
+5. **Cargar los datos una vez** (edificios, usuarios, categorías): desde tu computador, apuntando a la misma base de datos de producción:
+   ```bash
+   DATABASE_URL="<la misma URL que pusiste en Vercel>" npm run db:seed
+   ```
+   Esto no se automatiza en cada deploy a propósito — solo debe correr una vez (es seguro repetirlo, no borra nada, pero no hace falta).
+
+**Limitación conocida de esta demo**: los adjuntos de tickets y el importador de Excel escriben archivos temporales en disco; en Vercel eso vive en `/tmp`, que no persiste de forma confiable entre invocaciones. Para producción real, la ruta es migrar `src/lib/storage.ts` a S3/Azure Blob (el resto del sistema ya está pensado para ese cambio, según el README abajo).
+
+## Puesta en marcha (local)
 
 ```bash
 npm install

@@ -11,9 +11,16 @@ import crypto from "node:crypto";
  * URL directa). En producción, reemplazar `saveFile`/`readFile` por el SDK
  * de S3 (o Azure Blob) — el resto del sistema no debería cambiar, porque
  * solo llama a estas dos funciones.
+ *
+ * En Vercel (o cualquier runtime serverless) el filesystem del proyecto es
+ * de solo lectura salvo `/tmp`, y `/tmp` no persiste entre invocaciones —
+ * así que en ese entorno los adjuntos sobreviven la sesión pero no quedan
+ * garantizados a largo plazo. Es una limitación conocida de la demo, no un
+ * bug: la migración real a S3 es la que lo resuelve en producción.
  */
 
-const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(process.cwd(), "storage", "uploads");
+const UPLOAD_DIR =
+  process.env.UPLOAD_DIR || (process.env.VERCEL ? "/tmp/jop360-uploads" : path.join(process.cwd(), "storage", "uploads"));
 const MAX_FILE_SIZE_BYTES = 15 * 1024 * 1024; // 15MB, configurable por env si se necesita
 const ALLOWED_MIME_PREFIXES = ["image/", "application/pdf", "application/vnd.", "text/", "application/msword"];
 

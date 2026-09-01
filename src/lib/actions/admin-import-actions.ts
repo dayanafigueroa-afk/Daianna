@@ -13,7 +13,9 @@ import { applyMasterData } from "@/lib/import/upsert-master";
 
 const IMPORT_TMP_DIR = process.env.UPLOAD_DIR
   ? path.join(process.env.UPLOAD_DIR, "..", "imports")
-  : path.join(process.cwd(), "storage", "imports");
+  : process.env.VERCEL
+    ? "/tmp/jop360-imports"
+    : path.join(process.cwd(), "storage", "imports");
 
 export type UploadState = { error?: string } | undefined;
 
