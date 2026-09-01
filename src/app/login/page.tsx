@@ -7,21 +7,21 @@ export default async function LoginPage() {
   if (session) redirect("/");
 
   return (
-    <main className="flex min-h-screen flex-1 items-center justify-center bg-background px-4 py-12">
-      <div className="w-full max-w-sm">
-        <div className="mb-8 text-center">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-brand">
+    <main className="flex min-h-screen flex-1 items-center justify-center bg-brand px-6 py-12 sm:px-16">
+      <div className="w-full max-w-sm rounded-3xl bg-surface px-8 py-10 shadow-xl">
+        <div className="mb-8">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-foreground-soft">
             Assetplan Multifamily
           </p>
-          <h1 className="text-4xl font-bold tracking-tight text-foreground">JOP 360</h1>
+          <h1 className="text-4xl font-bold tracking-tight text-foreground">
+            JOP <span className="text-brand">360</span>
+          </h1>
           <p className="mt-1 text-sm text-foreground-soft">
             Centro de Gestión Operacional Multifamily
           </p>
         </div>
 
-        <div className="rounded-2xl border border-border bg-surface p-7 shadow-sm">
-          <LoginForm />
-        </div>
+        <LoginForm />
 
         <p className="mt-6 text-center text-xs text-foreground-soft">
           Acceso solo con correo corporativo. Preparado para integración futura con SSO.

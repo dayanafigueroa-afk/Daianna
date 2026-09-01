@@ -9,6 +9,7 @@ function navFor(session: SessionUser): { href: string; label: string }[] {
     case "ADMIN":
       return [
         { href: "/admin", label: "Control global" },
+        { href: "/admin/reportes", label: "Reportes" },
         { href: "/admin/usuarios", label: "Usuarios" },
         { href: "/admin/credenciales", label: "Credenciales" },
         { href: "/admin/edificios", label: "Edificios" },
