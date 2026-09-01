@@ -1,15 +1,16 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f4f6f4;
+  /* Paleta Assetplan: azul de marca + neutros con sesgo azulado */
+  --background: #f4f6fb;
   --surface: #ffffff;
-  --surface-alt: #eef1ee;
-  --border: #dde3dd;
-  --foreground: #172019;
-  --foreground-soft: #55625a;
-  --brand: #1f5b4e;
-  --brand-soft: #e1ede8;
-  --brand-ink: #0f3c32;
+  --surface-alt: #eef2fb;
+  --border: #dde4f3;
+  --foreground: #141a24;
+  --foreground-soft: #545b6c;
+  --brand: #1d5feb;
+  --brand-soft: #e6edfd;
+  --brand-ink: #123f9e;
   --good: #2f7a52;
   --good-soft: #dcefe2;
   --warn: #a66a16;
