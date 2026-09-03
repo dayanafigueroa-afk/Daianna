@@ -35,39 +35,46 @@ export async function applyCredentialsAction(
     return { error: errors[0] ?? "El archivo no tiene filas válidas." };
   }
 
+  // Cada fila se aplica de forma independiente: si una falla, no debe
+  // impedir que el resto de las credenciales del archivo se apliquen.
   let applied = 0;
+  const failures: string[] = [];
   for (const row of rows) {
-    const passwordHash = await hashPassword(row.password);
-    const existing = await prisma.user.findUnique({ where: { email: row.email } });
+    try {
+      const passwordHash = await hashPassword(row.password);
+      const existing = await prisma.user.findUnique({ where: { email: row.email } });
 
-    await prisma.user.upsert({
-      where: { email: row.email },
-      update: { name: row.name, role: row.role, passwordHash, active: true, mustChangePassword: true },
-      create: {
-        name: row.name,
-        email: row.email,
-        role: row.role,
-        passwordHash,
-        active: true,
-        mustChangePassword: true,
-      },
-    });
+      await prisma.user.upsert({
+        where: { email: row.email },
+        update: { name: row.name, role: row.role, passwordHash, active: true, mustChangePassword: true },
+        create: {
+          name: row.name,
+          email: row.email,
+          role: row.role,
+          passwordHash,
+          active: true,
+          mustChangePassword: true,
+        },
+      });
 
-    await logAudit(prisma, {
-      userId: admin.id,
-      action: existing ? "ACTUALIZAR_CREDENCIAL" : "CREAR_USUARIO_DESDE_CREDENCIALES",
-      module: "admin.credenciales",
-      recordType: "User",
-      recordId: row.email,
-      newValue: row.role,
-    });
-    applied++;
+      await logAudit(prisma, {
+        userId: admin.id,
+        action: existing ? "ACTUALIZAR_CREDENCIAL" : "CREAR_USUARIO_DESDE_CREDENCIALES",
+        module: "admin.credenciales",
+        recordType: "User",
+        recordId: row.email,
+        newValue: row.role,
+      });
+      applied++;
+    } catch (err) {
+      failures.push(`${row.email}: no se pudo aplicar (${err instanceof Error ? err.message : "error desconocido"}).`);
+    }
   }
 
   revalidatePath("/admin/usuarios");
   return {
-    success: `Se aplicaron ${applied} credenciales.`,
+    success: `Se aplicaron ${applied} de ${rows.length} credenciales.`,
     applied,
-    warnings: errors,
+    warnings: [...errors, ...failures],
   };
 }
