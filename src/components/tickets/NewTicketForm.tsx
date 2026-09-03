@@ -126,6 +126,10 @@ export function NewTicketForm({
               No
             </label>
           </div>
+          <p className="mt-1.5 text-xs text-foreground-soft">
+            El edificio es solo referencia: el ticket queda asignado al responsable elegido
+            arriba, no al edificio.
+          </p>
         </fieldset>
       ) : null}
 
