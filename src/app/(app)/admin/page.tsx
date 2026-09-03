@@ -49,7 +49,7 @@ export default async function AdminDashboardPage({
   return (
     <div>
       <h1 className="text-2xl font-bold text-foreground">Control global de tickets</h1>
-      <p className="mt-1 text-sm text-foreground-soft">Vista completa de la operación JOP 360.</p>
+      <p className="mt-1 text-sm text-foreground-soft">Vista completa de la operación Property 360.</p>
 
       <div className="mt-6">
         <IndicatorCards

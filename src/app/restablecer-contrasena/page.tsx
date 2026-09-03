@@ -14,7 +14,7 @@ export default async function RestablecerContrasenaPage({
           <h1 className="text-2xl font-bold tracking-tight text-foreground">
             Restablecer contraseña
           </h1>
-          <p className="mt-1 text-sm text-foreground-soft">JOP 360</p>
+          <p className="mt-1 text-sm text-foreground-soft">Property 360</p>
         </div>
         <div className="rounded-2xl border border-border bg-surface p-7 shadow-sm">
           {token ? (

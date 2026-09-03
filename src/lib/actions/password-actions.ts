@@ -18,7 +18,7 @@ export async function requestPasswordResetAction(
 ): Promise<RequestResetState> {
   const parsed = z.string().email().safeParse(formData.get("email"));
   const genericMessage =
-    "Si el correo existe en JOP 360, se enviará un enlace para restablecer la contraseña.";
+    "Si el correo existe en Property 360, se enviará un enlace para restablecer la contraseña.";
 
   if (!parsed.success) return { message: genericMessage };
 
@@ -36,7 +36,7 @@ export async function requestPasswordResetAction(
     const resetUrl = `${process.env.APP_URL ?? "http://localhost:3000"}/restablecer-contrasena?token=${token}`;
     await sendCorporateEmail({
       to: user.email,
-      subject: "JOP 360 — Restablecer contraseña",
+      subject: "Property 360 — Restablecer contraseña",
       body: `Solicitaste restablecer tu contraseña. Enlace (válido 1 hora): ${resetUrl}`,
     });
 

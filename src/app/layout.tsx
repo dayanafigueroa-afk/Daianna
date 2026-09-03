@@ -15,7 +15,7 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "JOP 360 — Centro de Gestión Operacional Multifamily",
+  title: "Property 360 — Centro de Gestión Property",
   description: "Plataforma de gestión de solicitudes y tickets Multifamily de Assetplan.",
 };
 

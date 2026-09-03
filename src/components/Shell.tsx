@@ -42,7 +42,7 @@ export function Shell({
       <header className="border-b border-border bg-surface">
         <div className="mx-auto flex max-w-6xl items-center gap-6 px-4 py-3">
           <Link href="/" className="shrink-0">
-            <span className="text-lg font-bold tracking-tight text-brand-ink">JOP 360</span>
+            <span className="text-lg font-bold tracking-tight text-brand-ink">Property 360</span>
           </Link>
 
           <nav className="flex flex-1 items-center gap-1 overflow-x-auto">
