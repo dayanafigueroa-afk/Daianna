@@ -49,6 +49,7 @@ async function notifyAssignees(
 
 const createTicketSchema = z.object({
   target: z.enum(["JOP", "JEM"]),
+  jopId: z.string().trim().optional(),
   areaSolicitante: z.string().trim().min(1, "Área solicitante es obligatoria."),
   buildingId: z.string().trim().optional(),
   categoryId: z.string().trim().min(1, "Selecciona una categoría."),
@@ -69,6 +70,7 @@ export async function createTicketAction(
 
   const parsed = createTicketSchema.safeParse({
     target: formData.get("target"),
+    jopId: formData.get("jopId") || undefined,
     areaSolicitante: formData.get("areaSolicitante"),
     buildingId: formData.get("buildingId") || undefined,
     categoryId: formData.get("categoryId"),
@@ -86,6 +88,14 @@ export async function createTicketAction(
 
   if (data.target === "JEM" && !data.buildingId) {
     return { error: "El edificio es obligatorio para una solicitud dirigida al JEM." };
+  }
+
+  if (data.target === "JOP") {
+    if (!data.jopId) return { error: "Selecciona un responsable (JOP) para la solicitud." };
+    const jop = await prisma.user.findUnique({ where: { id: data.jopId } });
+    if (!jop || jop.role !== "JOP" || !jop.active) {
+      return { error: "El responsable seleccionado no es válido." };
+    }
   }
 
   const category = await prisma.category.findUnique({ where: { id: data.categoryId } });
@@ -121,12 +131,12 @@ export async function createTicketAction(
   const slaDueAt = await computeSlaDueDate(new Date(), category.slaDays);
 
   const ticket = await prisma.$transaction(async (tx) => {
-    const assignment = await resolveAssignment(tx, {
-      target: data.target,
-      buildingId: data.buildingId ?? null,
-    });
+    const assignment =
+      data.target === "JOP"
+        ? { assignedJemId: null, assignedJopId: data.jopId! }
+        : await resolveAssignment(tx, { buildingId: data.buildingId! });
     const code = await nextTicketCode(tx);
-    const status: TicketStatus = assignment.assignedJemId || assignment.assignedJopId ? "ASIGNADO" : "NUEVO";
+    const status: TicketStatus = "ASIGNADO";
 
     const created = await tx.ticket.create({
       data: {
@@ -176,20 +186,6 @@ export async function createTicketAction(
       `Nuevo ticket asignado: ${created.code}`,
       `${session.name} creó la solicitud "${created.subject}".`
     );
-
-    if (!assignment.assignedJemId && !assignment.assignedJopId) {
-      const admins = await tx.user.findMany({ where: { role: "ADMIN", active: true } });
-      for (const admin of admins) {
-        await notifyUser(tx, {
-          userId: admin.id,
-          userEmail: admin.email,
-          ticketId: created.id,
-          type: "TICKET_CREADO",
-          title: `Ticket sin asignar: ${created.code}`,
-          body: `No se pudo resolver un JOP automáticamente (sin edificio asociado). Requiere asignación manual.`,
-        });
-      }
-    }
 
     return created;
   });
