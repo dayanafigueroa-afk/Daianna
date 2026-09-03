@@ -71,6 +71,12 @@ export function Shell({
               <p className="text-sm font-medium text-foreground">{session.name}</p>
               <p className="text-xs text-foreground-soft">{ROLE_LABEL[session.role]}</p>
             </div>
+            <Link
+              href="/cambiar-contrasena"
+              className="whitespace-nowrap rounded-md px-2.5 py-1.5 text-xs font-medium text-foreground-soft transition hover:bg-surface-alt hover:text-foreground"
+            >
+              Cambiar contraseña
+            </Link>
             <form action={logoutAction}>
               <button
                 type="submit"

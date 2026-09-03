@@ -4,7 +4,7 @@ import { z } from "zod";
 import crypto from "node:crypto";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { hashPassword } from "@/lib/auth";
+import { hashPassword, verifyPassword, requireSession } from "@/lib/auth";
 import { sendCorporateEmail } from "@/lib/notifications/email-channel";
 import { logAudit } from "@/lib/history";
 
@@ -101,4 +101,55 @@ export async function resetPasswordAction(
   });
 
   redirect("/login");
+}
+
+const changeOwnPasswordSchema = z.object({
+  currentPassword: z.string().min(1, "Ingresa tu contraseña actual."),
+  newPassword: z.string().min(8, "La nueva contraseña debe tener al menos 8 caracteres."),
+  confirmPassword: z.string().min(1, "Confirma la nueva contraseña."),
+});
+
+export type ChangeOwnPasswordState = { error?: string } | undefined;
+
+/**
+ * Cambio de contraseña por la propia persona logueada (voluntario, o
+ * forzado cuando mustChangePassword está activo tras un alta o reset).
+ */
+export async function changeOwnPasswordAction(
+  _prev: ChangeOwnPasswordState,
+  formData: FormData
+): Promise<ChangeOwnPasswordState> {
+  const session = await requireSession();
+
+  const parsed = changeOwnPasswordSchema.safeParse({
+    currentPassword: formData.get("currentPassword"),
+    newPassword: formData.get("newPassword"),
+    confirmPassword: formData.get("confirmPassword"),
+  });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Datos inválidos." };
+  }
+  if (parsed.data.newPassword !== parsed.data.confirmPassword) {
+    return { error: "Las contraseñas nuevas no coinciden." };
+  }
+
+  const user = await prisma.user.findUniqueOrThrow({ where: { id: session.id } });
+  const ok = await verifyPassword(parsed.data.currentPassword, user.passwordHash);
+  if (!ok) return { error: "La contraseña actual no es correcta." };
+
+  const passwordHash = await hashPassword(parsed.data.newPassword);
+  await prisma.user.update({
+    where: { id: session.id },
+    data: { passwordHash, mustChangePassword: false },
+  });
+
+  await logAudit(prisma, {
+    userId: session.id,
+    action: "CAMBIAR_PASSWORD_PROPIA",
+    module: "auth",
+    recordType: "User",
+    recordId: session.id,
+  });
+
+  redirect("/");
 }
