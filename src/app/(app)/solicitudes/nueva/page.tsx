@@ -8,11 +8,16 @@ export default async function NuevaSolicitudPage() {
   const buildingWhere =
     session.role === "JEM" ? { id: { in: session.buildingIdsAsJem }, active: true } : { active: true };
 
-  const [buildings, categories, subcategories, priorities] = await Promise.all([
+  const [buildings, categories, subcategories, priorities, jopUsers] = await Promise.all([
     prisma.building.findMany({ where: buildingWhere, orderBy: { name: "asc" }, select: { id: true, name: true } }),
     prisma.category.findMany({ where: { active: true }, orderBy: { name: "asc" } }),
     prisma.subcategory.findMany({ where: { active: true }, orderBy: { name: "asc" } }),
     prisma.priority.findMany({ where: { active: true }, orderBy: { level: "asc" } }),
+    prisma.user.findMany({
+      where: { role: "JOP", active: true },
+      orderBy: { name: "asc" },
+      select: { id: true, name: true },
+    }),
   ]);
 
   return (
@@ -30,6 +35,7 @@ export default async function NuevaSolicitudPage() {
           categories={categories}
           subcategories={subcategories}
           priorities={priorities}
+          jopUsers={jopUsers}
         />
       </div>
     </div>

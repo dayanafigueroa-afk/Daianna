@@ -5,6 +5,7 @@ import type { Category, Subcategory, Priority } from "@prisma/client";
 import { createTicketAction, type CreateTicketState } from "@/lib/actions/ticket-actions";
 
 type Building = { id: string; name: string };
+type JopUser = { id: string; name: string };
 
 export function NewTicketForm({
   role,
@@ -12,12 +13,14 @@ export function NewTicketForm({
   categories,
   subcategories,
   priorities,
+  jopUsers,
 }: {
   role: string;
   buildings: Building[];
   categories: Category[];
   subcategories: Subcategory[];
   priorities: Priority[];
+  jopUsers: JopUser[];
 }) {
   const [state, formAction, pending] = useActionState<CreateTicketState, FormData>(
     createTicketAction,
@@ -72,6 +75,24 @@ export function NewTicketForm({
           ))}
         </div>
       </fieldset>
+
+      {target === "JOP" ? (
+        <Field label="Responsable (JOP)" required>
+          <select name="jopId" required className={inputClass} defaultValue="">
+            <option value="" disabled>
+              Selecciona un JOP…
+            </option>
+            {jopUsers.map((j) => (
+              <option key={j.id} value={j.id}>
+                {j.name}
+              </option>
+            ))}
+          </select>
+          {jopUsers.length === 0 ? (
+            <p className="mt-1 text-xs text-crit">No hay JOP activos disponibles.</p>
+          ) : null}
+        </Field>
+      ) : null}
 
       <Field label="Área solicitante" required>
         <input
