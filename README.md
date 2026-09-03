@@ -1,4 +1,4 @@
-# JOP 360 — Centro de Gestión Operacional Multifamily
+# Property 360 — Centro de Gestión Property
 
 Plataforma de gestión de solicitudes y tickets para la operación Multifamily de
 Assetplan. MVP funcional cubriendo el flujo completo: **solicitud → ticket →

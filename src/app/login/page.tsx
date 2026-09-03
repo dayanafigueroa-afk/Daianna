@@ -14,10 +14,10 @@ export default async function LoginPage() {
             Assetplan Multifamily
           </p>
           <h1 className="text-4xl font-bold tracking-tight text-foreground">
-            JOP <span className="text-brand">360</span>
+            Property <span className="text-brand">360</span>
           </h1>
           <p className="mt-1 text-sm text-foreground-soft">
-            Centro de Gestión Operacional Multifamily
+            Centro de Gestión Property
           </p>
         </div>
 
