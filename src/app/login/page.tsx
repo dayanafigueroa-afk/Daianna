@@ -1,11 +1,6 @@
-import { redirect } from "next/navigation";
-import { getSession } from "@/lib/auth";
 import { LoginForm } from "./LoginForm";
 
-export default async function LoginPage() {
-  const session = await getSession();
-  if (session) redirect("/");
-
+export default function LoginPage() {
   return (
     <main className="flex min-h-screen flex-1 items-center justify-center bg-brand px-6 py-12 sm:px-16">
       <div className="w-full max-w-sm rounded-3xl bg-surface px-8 py-10 shadow-xl">
