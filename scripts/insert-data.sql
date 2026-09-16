@@ -1,0 +1,78 @@
+-- NEXO: Insertar datos iniciales
+-- Ejecuta este script después de crear las tablas
+
+-- ==================== USUARIOS ====================
+INSERT INTO usuarios (nombre, correo, cargo, permiso, rol, area, activo) VALUES
+('Dayana Figueroa', 'dayana.figueroa@assetplan.cl', 'Líder de Proyecto', 'Dueño', 'dueno', '', true),
+('Marlyn Melendez', 'marlyn.melendez@assetplan.cl', 'Jefe de Operaciones', 'Administrador', 'admin', '', true),
+('Daniel Chacón', 'daniel.chacon@assetplan.cl', 'Subgerente de Operaciones', 'Administrador', 'admin', '', true),
+('Gonzalo Cabezas', 'gonzalo.cabezas@assetplan.cl', 'Gerente de Edificios', 'Administrador', 'admin', '', true),
+('Maria Eugenia Pacheco', 'maria.pacheco@assetplan.cl', 'Jefe Backoffice', 'Administrador', 'admin', '', true),
+('Francisco Egidi', 'francisco.egidi@assetplan.cl', 'Jefe Atención y Experiencia', 'Administrador', 'admin', '', true),
+('Salvador Fasanella', 'salvador.fasanella@assetplan.cl', 'Jefe Eleva', 'Administrador', 'admin', '', true),
+('Andrea Matheus', 'andrea.matheus@assetplan.cl', 'Jefe de Operaciones', 'Agente', 'jop', '', true),
+('Aniuska Castillo', 'aniuska.castillo@assetplan.cl', 'Jefe de Operaciones', 'Agente', 'jop', '', true),
+('Anthoyne González', 'anthoyne.gonzalez@assetplan.cl', 'Jefe de Operaciones', 'Agente', 'jop', '', true),
+('Ariyari Chacín', 'ariyari.chacin@assetplan.cl', 'Jefe de Operaciones', 'Agente', 'jop', '', true),
+('Jermayn Goncalves', 'jermayn.goncalves@assetplan.cl', 'Jefe de Operaciones', 'Agente', 'jop', '', true),
+('Joel Zavarce', 'joel.zavarce@assetplan.cl', 'Jefe de Operaciones', 'Agente', 'jop', '', true),
+('Kandy Mata', 'kandy.mata@assetplan.cl', 'Jefe de Operaciones', 'Agente', 'jop', '', true),
+('Maria Victoria Montiel', 'maria.montiel@assetplan.cl', 'Jefe de Operaciones', 'Agente', 'jop', '', true),
+('Marian Villarroel', 'mariam.villarroel@assetplan.cl', 'Jefe de Operaciones', 'Agente', 'jop', '', true),
+('Sergio Maldonado', 'sergio.maldonado@assetplan.cl', 'Jefe de Operaciones', 'Agente', 'jop', '', true),
+('Arisleida Amaro', 'arisleida.amaro@assetplan.cl', 'Ejecutivo Cobranza', 'Solicitante', 'solicitante', 'Cobranzas', true),
+('Camila Fierro', 'camila.fierro@assetplan.cl', 'Ejecutivo Cobranza', 'Solicitante', 'solicitante', 'Cobranzas', true),
+('Antonia Iñiguez', 'antonia.iniguez@assetplan.cl', 'Portfolio Manager Multifamily', 'Solicitante', 'solicitante', 'Asset Management MF', true),
+('Constanza Cisternas', 'constanza.cisternas@assetplan.cl', 'Analista de Gestión Personas', 'Solicitante', 'solicitante', 'Gestión de Personas', true);
+
+-- ==================== EDIFICIOS ====================
+INSERT INTO edificios (id, nombre, comuna, tipo, modelo, deptos, propietario, jem_correo, jop_correo) VALUES
+(1, 'Alameda Park', 'Estación Central', 'Multifamily', 'Modelo Local', 299, 'BTG', 'alamedapark@apcomunidades.cl', 'kandy.mata@assetplan.cl'),
+(2, 'Alma Hipodromo', 'Independencia', 'Multifamily', 'Modelo Local', 133, 'Bunster', 'almahipodromo@apcomunidades.cl', 'maria.montiel@assetplan.cl'),
+(3, 'Amengual', 'Estación Central', 'Multifamily', 'Modelo Local', 271, 'Triple I', 'amengual@apcomunidades.cl', 'jermayn.goncalves@assetplan.cl'),
+(4, 'Pio X', 'Providencia', 'Multifamily', 'Modelo Local', 132, 'Eduardo Schapira', 'piox@apcomunidades.cl', 'anthoyne.gonzalez@assetplan.cl'),
+(5, 'Conecta Despouy', 'La Cisterna', 'Multifamily', 'Modelo Local', 272, 'Sura', 'despouy@apcomunidades.cl', 'jermayn.goncalves@assetplan.cl'),
+(6, 'Mirador José Ureta', 'La Cisterna', 'Multifamily', 'Modelo Local', 227, 'Gensa', 'joseureta@apcomunidades.cl', 'maria.montiel@assetplan.cl'),
+(7, 'Edificio San Carlos', 'La Florida', 'Multifamily', 'Modelo Local', 111, 'Zurich', 'sancarlos@apcomunidades.cl', 'jermayn.goncalves@assetplan.cl'),
+(8, 'Activa Juan Mitjans', 'Macul', 'Multifamily', 'Modelo Local', 165, 'Parque Arauco', 'mitjans@apcomunidades.cl', 'joel.zavarce@assetplan.cl'),
+(9, 'Vicuña Urban', 'La Florida', 'Multifamily', 'Modelo Local', 262, 'Larraín Vial', 'vicunaurban@apcomunidades.cl', 'anthoyne.gonzalez@assetplan.cl'),
+(10, 'Antonia', 'La Florida', 'Multifamily', 'Modelo Local', 73, 'German Guerrero', 'antonia@apcomunidades.cl', 'jermayn.goncalves@assetplan.cl');
+
+-- ==================== CATEGORÍAS ====================
+INSERT INTO categorias (id, rol, categoria, subcategoria, dias, horas, prioridad, activo) VALUES
+(1, 'JOP', 'Administración y Personas', 'Aprobaciones propietarios', 3, 72, 'Urgente', true),
+(2, 'JOP', 'Administración y Personas', 'Compras', 3, 72, 'Alta', true),
+(3, 'JOP', 'Atención al Cliente', 'Atención al cliente', 2, 48, 'Alta', true),
+(4, 'JOP', 'Atención al Cliente', 'Atención al cliente postventa', 15, 360, 'Alta', true),
+(5, 'JOP', 'Comercial y Arriendo', 'Cupones', 2, 48, 'Urgente', true),
+(6, 'JOP', 'Comercial y Arriendo', 'Demand', 2, 48, 'Media', true),
+(7, 'JOP', 'Comercial y Arriendo', 'Rotaciones', 3, 72, 'Alta', true),
+(8, 'JOP', 'Comunicación Interna', 'Bajada de información al JEM', 2, 48, 'Urgente', true),
+(9, 'JOP', 'Gestión de Cobranza', 'Cobranzas', 2, 48, 'Media', true),
+(10, 'JOP', 'Gestión de Cobranza', 'Solicitud de Descerraje', 3, 72, 'Urgente', true),
+(11, 'JOP', 'Legal y Contratos', 'Requerimientos legales', 2, 48, 'Alta', true),
+(12, 'JOP', 'Mantención y Reparaciones', 'Requerimientos de mantención', 3, 72, 'Media', true),
+(13, 'JOP', 'Reclamos Prioritarios', 'Sernac', 3, 72, 'Urgente', true),
+(14, 'JOP', 'Reclamos Prioritarios', 'Reclamos.cl', 3, 72, 'Urgente', true),
+(15, 'JOP', 'Reclamos Prioritarios', 'Redes Sociales', NULL, 4, 'Urgente', true),
+(16, 'JOP', 'Seguridad y Prevención', 'Prevención de riesgos', 2, 48, 'Alta', true),
+(17, 'JOP', 'Seguros', 'Seguros', 15, 360, 'Baja', true),
+(18, 'JEM', 'Personas', 'Recursos Humanos', 2, 48, 'Alta', true),
+(19, 'JEM', 'Atención al Cliente', 'Atención Urgente al cliente', 1, 24, 'Alta', true),
+(20, 'JEM', 'Atención al Cliente', 'Gestión de reclamo', 1, 24, 'Alta', true),
+(21, 'JEM', 'Comunicación Interna', 'Bajada de información al Equipo', 1, 24, 'Urgente', true),
+(22, 'JEM', 'Gestión de Cobranza', 'Gestión de Cobranza', 2, 48, 'Media', true),
+(23, 'JEM', 'Gestión de Rotaciones', 'Emisión de Salvoconducto', 1, 24, 'Alta', true),
+(24, 'JEM', 'Gestión de Rotaciones', 'Emisión de Check Out', 1, 24, 'Alta', true),
+(25, 'JEM', 'Legal y Contratos', 'Contratos', 2, 48, 'Media', true),
+(26, 'JEM', 'Legal y Contratos', 'Legal', 2, 48, 'Alta', true),
+(27, 'JEM', 'Mantención y Reparaciones', 'Reparaciones', 3, 72, 'Alta', true),
+(28, 'JEM', 'Mantención y Reparaciones', 'Mantenciones', 3, 72, 'Alta', true),
+(29, 'JEM', 'Reclamos Prioritarios', 'Sernac', 2, 48, 'Urgente', true),
+(30, 'JEM', 'Reclamos Prioritarios', 'Reclamos.cl', 2, 48, 'Urgente', true),
+(31, 'JEM', 'Reclamos Prioritarios', 'Redes Sociales', NULL, 2, 'Urgente', true),
+(32, 'JEM', 'Seguridad y Prevención', 'Simulacros', 3, 72, 'Media', true),
+(33, 'JEM', 'Seguridad y Prevención', 'Seguridad', 3, 72, 'Alta', true),
+(34, 'JEM', 'Seguridad y Prevención', 'Certificaciones', 3, 72, 'Media', true),
+(35, 'JEM', 'Sistemas Visitas y Encomiendas', 'Encomiendas', 1, 24, 'Baja', true),
+(36, 'JEM', 'Sistemas Visitas y Encomiendas', 'Visitas', 1, 24, 'Baja', true);
